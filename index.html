@@ -1,0 +1,41 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="UTF-8" lang="en">
+    <title>SafeSpace</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+  </head>
+  <body>
+    <div id="container">
+      <div id="one" class="page-section">
+        <div id="header">
+          <h1>Safe Space</h1>
+          <input id="location-input-field" class="input" type="text" placeholder="find places">
+          <input id="submit-location-button" type="submit" value="Next">
+        </div>
+      </div>
+      <div id="two" class="page-section"></div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/3.8.0/firebase.js"></script>
+
+    <script>
+      // Initialize Firebase
+      let config = {
+        apiKey: "AIzaSyAXwcqNQ6lCAYGUPktfZF4v_4Alp3U344A",
+        authDomain: "safe-space-f402b.firebaseapp.com",
+        databaseURL: "https://safe-space-f402b.firebaseio.com",
+        projectId: "safe-space-f402b",
+        storageBucket: "safe-space-f402b.appspot.com",
+        messagingSenderId: "1065980272668"
+      };
+      firebase.initializeApp(config);
+
+    </script>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBrZusqvcgz0oFhfR_RnbifIwg6kigs8bA&libraries=places"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="main.js"></script>
+
+  </body>
+</html>
