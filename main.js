@@ -9,6 +9,7 @@ const errorMessage = document.getElementById('error-message');
 // Get a reference to the firebase database
 const database = firebase.database();
 const databaseRootRef = database.ref('Orgs');
+// dataArr stores refreshed firebase data
 let dataArr = [];
 
 // Get Firebase data
@@ -45,6 +46,8 @@ autocomplete.addListener('place_changed', () => {
 
 if(locationInputField.value) { locationInputField.size = locationInputField.value.length } ;
 
+/*
+// FOURSQUARE INTEGRATION
 // make AJAX call to FOURSQUARE
 // make an instance of the XMLHttpRequest class
 const xhr = new XMLHttpRequest();
@@ -57,29 +60,14 @@ xhr.onload = () => {
 }
 // send off the request
 xhr.send(JSON.stringify());
-
-// create dynamic list item templates
-let createListItem = (title, subtitle) => {
-  let listItem = document.createElement('li');
-  let listItemTitle = document.createElement('h2');
-  let listItemSubtitle = document.createElement('h4');
-  //let listItemContent = document.createElement('p');
-
-  listItemTitle.innerHTML = title;
-  listItemSubtitle.innerHTML = subtitle;
-  //listItemContent.innerHTML = content;
-
-  listItem.appendChild(listItemTitle);
-  listItem.appendChild(listItemSubtitle);
-  //listItem.appendChild(listItemContent);
-
-  return listItem;
-
-}
+*/
 
 // EVENT LISTENERS
 
-// re-style locationInputField on click
+// BODY: shink responsive buttons when clicks occur elsewhere
+body.addEventListener('click', firstDivPageClicks);
+
+// LOCATION INPUT FIELD: re-style locationInputField on click
 locationInputField.addEventListener('click', () => {
     locationInputField.style.width = '250px';
     locationInputField.style.textAlign = 'left';
@@ -87,19 +75,24 @@ locationInputField.addEventListener('click', () => {
     submitLocationBtn.style.display = 'inline';
 });
 
-// shink responsive buttons when clicks occur elsewhere
-body.addEventListener('click', firstDivPageClicks);
+// SUBMIT LOCATION BUTTON
 
-// soft scroll from div one to div two
+function handlesSubmitClick() {
+  clearErrorMessage();
+  // clear the second div
+  secondDiv.innerHTML = '';
+  // show the second div
+  secondDiv.style.display = 'block';
+}
+ // soft scroll from div one to div two
 $(document).ready(function() {
   function scrollOneToTwo() {
+    // if the location is valid (providded by Google autocomplete)
     if(locationAutoSelected) {
-      clearErrorMessage();
-      secondDiv.style.display = 'block';
+      handlesSubmitClick();
       $('html, body').animate({scrollTop: $('#two').offset().top}, 'slow');
       let results = dataArr;
       results.forEach(resultObj => {
-        console.log(resultObj)
         showResults(resultObj);
       });
     } else {
@@ -119,6 +112,7 @@ function clearErrorMessage() {
 
 // handles clicks on the first Div
 function firstDivPageClicks(event) {
+  // if a click occurs somewhere other that the input field or search button
   if(event.target !== locationInputField && event.target !== submitLocationBtn) {
     clearErrorMessage();
     if(locationInputField.value) {
@@ -136,6 +130,24 @@ function firstDivPageClicks(event) {
       submitLocationBtn.style.display = 'none';
     }
   }
+}
+
+// create dynamic list item templates
+function createListItem(title, subtitle) {
+  let listItem = document.createElement('li');
+  let listItemTitle = document.createElement('h2');
+  let listItemSubtitle = document.createElement('h4');
+  //let listItemContent = document.createElement('p');
+
+  listItemTitle.innerHTML = title;
+  listItemSubtitle.innerHTML = subtitle;
+  //listItemContent.innerHTML = content;
+
+  listItem.appendChild(listItemTitle);
+  listItem.appendChild(listItemSubtitle);
+  //listItem.appendChild(listItemContent);
+
+  return listItem;
 }
 
 function showResults(dataObj) {
