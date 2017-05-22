@@ -1,13 +1,31 @@
-body {
-  font-family: sans-serif;
+* {
   padding: 0;
   margin: 0;
 }
 
-h1 {
+body {
+  font-family: sans-serif;
+}
+
+.divOneHeaders {
   color: #d8492e;
-  margin-top: 0;
   font-size: 6em;
+}
+
+.divTwoHeaders {
+  color: #f07910;
+}
+
+@media (max-width: 520px) {
+  #header > h1{
+    font-size: 4.2em;
+  }
+}
+
+@media (max-width: 550px) {
+  #location-input-field {
+    width: 100px;
+  }
 }
 
 #container {
@@ -21,13 +39,21 @@ h1 {
 
 #two {
   background-color: orange;
+  position: relative;
+  display: none;
 }
 
 #header {
   position: absolute;
-  top: 30%;
+  top: 33%;
   width: 100%;
   margin: 0 auto;
+}
+
+#error-message {
+  color: #f4f2ca;
+  font-size: 0.7em;
+  font-weight: 100;
 }
 
 .page-section {
@@ -42,11 +68,11 @@ h1 {
 }
 
 .input {
-	width: 120px;
+  width: 120px;
 	display: inline-block;
 	color: #f4f2ca;
+  background-color: #d8492e;
 	text-align: center;
-	background-color: #d8492e;
 	padding: .9em 1.8em;
 	border: none;
 	cursor: pointer;
@@ -71,8 +97,19 @@ h1 {
 	-webkit-transition: all .2s linear;
 	-moz-transition: all .2s linear;
 	transition: all .2s linear;
-
 	cursor: pointer; /* for demo only */
-
 	display: none;
+}
+
+.reviews-list {
+  list-style: none;
+  -webkit-column-count: 2;
+  -moz-column-count: 2;
+  -ms-column-count: 2;
+  -o-column-count: 2;
+  column-count: 2;
+}
+
+input[type=text] {
+  margin-top: 2em;
 }

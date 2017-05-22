@@ -1,27 +1,49 @@
-// declare constant DOM variables
+// declare constant DOM elements
 const body = document.body;
+const firstDiv = document.getElementById('one');
+const secondDiv = document.getElementById('two');
 const locationInputField = document.getElementById('location-input-field');
 const submitLocationBtn = document.getElementById('submit-location-button');
+const errorMessage = document.getElementById('error-message');
 
 // Get a reference to the firebase database
 const database = firebase.database();
-const databaseOrgs = firebase.database().ref('Orgs');
-let mainOrgsObject;
+const databaseRootRef = database.ref('Orgs');
+let dataArr = [];
 
-// GOOGLE API: handle the location input field autocomplete
+// Get Firebase data
+databaseRootRef.on('value', snapshot => {
+  let newDataArr = [];
+  snapshot.forEach(snapshotChild => {
+    newDataArr.push(snapshotChild.val());
+    //console.log(snapshotChild.val());
+  });
+  dataArr = newDataArr;
+  console.log(dataArr);
+});
+
+// locationAutoSelected tracks whether or not the location entered into the
+// locationInputField was a proper Google autocomplete result
+let locationAutoSelected = false;
+let searchResults = '';
+
+// GOOGLE API - handle the location input field autocomplete
 let options = {
+  // will only return cities
   types: ['(cities)'],
+  // will only return US locations
   componentRestrictions: {country: 'us'}
 };
 
 let autocomplete = new google.maps.places.Autocomplete(locationInputField, options);
 autocomplete.addListener('place_changed', () => {
   let place = autocomplete.getPlace();
-  if(!place) console.log(`No available input for ${place.name}`);
-  else console.log(`Woo, found ${place.name}`);
+  locationAutoSelected = true;
+  //if(!place) console.log(`No available input for ${place.name}`);
+  //else console.log(`Woo, found ${place.name}`);
 });
 
-if(locationInputField.value) locationInputField.size = locationInputField.value.length;
+if(locationInputField.value) { locationInputField.size = locationInputField.value.length } ;
 
 // make AJAX call to FOURSQUARE
 // make an instance of the XMLHttpRequest class
@@ -36,7 +58,7 @@ xhr.onload = () => {
 // send off the request
 xhr.send(JSON.stringify());
 
-// create some dynamic templates
+// create dynamic list item templates
 let createListItem = (title, subtitle) => {
   let listItem = document.createElement('li');
   let listItemTitle = document.createElement('h2');
@@ -55,8 +77,9 @@ let createListItem = (title, subtitle) => {
 
 }
 
-// BUTTON CLICKS + EVENT HANDLERS
+// EVENT LISTENERS
 
+// re-style locationInputField on click
 locationInputField.addEventListener('click', () => {
     locationInputField.style.width = '250px';
     locationInputField.style.textAlign = 'left';
@@ -65,37 +88,66 @@ locationInputField.addEventListener('click', () => {
 });
 
 // shink responsive buttons when clicks occur elsewhere
-body.addEventListener('click', (e) => {
-  if(e.target !== locationInputField && e.target !== submitLocationBtn) {
+body.addEventListener('click', firstDivPageClicks);
 
-    if(locationInputField.value) {
-      locationInputField.size = locationInputField.value.length;
+// soft scroll from div one to div two
+$(document).ready(function() {
+  function scrollOneToTwo() {
+    if(locationAutoSelected) {
+      clearErrorMessage();
+      secondDiv.style.display = 'block';
+      $('html, body').animate({scrollTop: $('#two').offset().top}, 'slow');
+      let results = dataArr;
+      results.forEach(resultObj => {
+        console.log(resultObj)
+        showResults(resultObj);
+      });
     } else {
+      errorMessage.innerHTML = 'please enter a valid location'
+    }
+  }
+
+  submitLocationBtn.addEventListener('click', scrollOneToTwo);
+
+});
+
+// FUNCTIONS
+
+function clearErrorMessage() {
+  errorMessage.innerHTML = '';
+}
+
+// handles clicks on the first Div
+function firstDivPageClicks(event) {
+  if(event.target !== locationInputField && event.target !== submitLocationBtn) {
+    clearErrorMessage();
+    if(locationInputField.value) {
+      if (locationAutoSelected) {locationInputField.size = locationInputField.value.length}
+      // if location input isn't valid, go ahead and clear the field
+      else {
+        locationInputField.value = '';
+        console.log('inside else');
+      }
+    }
+    else {
       locationInputField.style.width = '120px';
       locationInputField.style.textAlign = 'center';
       locationInputField.placeholder = 'find places';
       submitLocationBtn.style.display = 'none';
     }
   }
+}
 
-});
+function showResults(dataObj) {
+  let reviewsList = document.createElement('ul');
+  reviewsList.className = 'reviews-list';
+  reviewsList.className = 'divTwoHeaders';
+  let header = dataObj.name;
+  let p = dataObj.score;
 
-// SCREEN SCROLLS
-// soft scroll with search btn click
-$(document).ready(function() {
-  $('#submit-location-button').click(function() {
-    $('html, body').animate({scrollTop: $('#two').offset().top}, 'slow');
-  });
-});
+  let listItem = createListItem(header, p);
 
-// FUNCTIONS
+  reviewsList.appendChild(listItem);
 
-// function that iterates over object in the database and creates a DOM template
-function appendObjectDataToElement(anObject, domElement) {
-  for(let item in anObject) {
-    let companyName = anObject[item].name;
-    let score = anObject[item].score;
-    mainText.appendChild(createListItem(companyName, score))
-    }
-    //console.log('appendObjectDataToElement ran');
+  secondDiv.appendChild(reviewsList);
 }
