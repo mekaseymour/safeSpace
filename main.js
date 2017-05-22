@@ -23,9 +23,9 @@ databaseRootRef.on('value', snapshot => {
   console.log(dataArr);
 });
 
-// locationAutoSelected tracks whether or not the location entered into the
+// googlePlaceSelected tracks whether or not the location entered into the
 // locationInputField was a proper Google autocomplete result
-let locationAutoSelected = false;
+let googlePlaceSelected = false;
 let searchResults = '';
 
 // GOOGLE API - handle the location input field autocomplete
@@ -39,7 +39,9 @@ let options = {
 let autocomplete = new google.maps.places.Autocomplete(locationInputField, options);
 autocomplete.addListener('place_changed', () => {
   let place = autocomplete.getPlace();
-  locationAutoSelected = true;
+  if(place.address_components) {
+    googlePlaceSelected = true;
+  }
   //if(!place) console.log(`No available input for ${place.name}`);
   //else console.log(`Woo, found ${place.name}`);
 });
@@ -63,38 +65,40 @@ xhr.send(JSON.stringify());
 */
 
 // EVENT LISTENERS
-
-// BODY: shink responsive buttons when clicks occur elsewhere
-body.addEventListener('click', firstDivPageClicks);
-
-// LOCATION INPUT FIELD: re-style locationInputField on click
-locationInputField.addEventListener('click', () => {
-    locationInputField.style.width = '250px';
-    locationInputField.style.textAlign = 'left';
-    locationInputField.placeholder = 'search by location...';
-    submitLocationBtn.style.display = 'inline';
-});
-
-locationInputField.addEventListener('keypress', event => {
-  if(event.keycode === 13) {
-    handlesSubmitClick();
-  }
-});
-
-// SUBMIT LOCATION BUTTON
-
-function handlesSubmitClick() {
-  clearErrorMessage();
-  // clear the second div
-  secondDiv.innerHTML = '';
-  // show the second div
-  secondDiv.style.display = 'block';
-}
- // soft scroll from div one to div two
 $(document).ready(function() {
+
+  // BODY: shink responsive buttons when clicks occur elsewhere
+  body.addEventListener('click', firstDivPageClicks);
+
+  // LOCATION INPUT FIELD: re-style locationInputField on click
+  locationInputField.addEventListener('click', () => {
+      locationInputField.style.width = '250px';
+      locationInputField.style.textAlign = 'left';
+      locationInputField.placeholder = 'search by location...';
+      submitLocationBtn.style.display = 'inline';
+  });
+
+  // FIRST DIV
+  firstDiv.addEventListener('keypress', event => {
+    if(event.keyCode === 13) {
+      scrollOneToTwo();
+    }
+  });
+
+  // SUBMIT LOCATION BUTTON
+
+  function handlesSubmitClick() {
+    clearErrorMessage();
+    // clear the second div
+    secondDiv.innerHTML = '';
+    // show the second div
+    secondDiv.style.display = 'block';
+  }
+ // soft scroll from div one to div two
+
   function scrollOneToTwo() {
     // if the location is valid (providded by Google autocomplete)
-    if(locationAutoSelected) {
+    if(googlePlaceSelected) {
       handlesSubmitClick();
       $('html, body').animate({scrollTop: $('#two').offset().top}, 'slow');
       let results = dataArr;
