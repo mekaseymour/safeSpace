@@ -75,6 +75,12 @@ locationInputField.addEventListener('click', () => {
     submitLocationBtn.style.display = 'inline';
 });
 
+locationInputField.addEventListener('keypress', event => {
+  if(event.keycode === 13) {
+    handlesSubmitClick();
+  }
+});
+
 // SUBMIT LOCATION BUTTON
 
 function handlesSubmitClick() {
@@ -96,8 +102,12 @@ $(document).ready(function() {
         showResults(resultObj);
       });
     } else {
+      secondDiv.innerHTML = '';
+      secondDiv.style.display = 'none';
       errorMessage.innerHTML = 'please enter a valid location'
     }
+    // set locationAutoSelected back to false
+    locationAutoSelected = false;
   }
 
   submitLocationBtn.addEventListener('click', scrollOneToTwo);

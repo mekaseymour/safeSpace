@@ -51,6 +51,7 @@ body {
 }
 
 #error-message {
+  margin-top: 1.5em;
   color: #f4f2ca;
   font-size: 0.7em;
   font-weight: 100;
