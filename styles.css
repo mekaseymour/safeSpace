@@ -13,7 +13,7 @@ body {
 }
 
 .divTwoHeaders {
-  color: #f07910;
+  color: #888888;
 }
 
 @media (max-width: 520px) {
@@ -35,12 +35,14 @@ body {
 #one {
   background-color: #f05133;
   position: relative;
+  height: 100vh;
 }
 
 #two {
-  background-color: orange;
+  background-color: #f7f7f7;
   position: relative;
   display: none;
+  min-height: 100vh;
 }
 
 #header {
@@ -56,11 +58,6 @@ body {
   font-size: 0.7em;
   font-weight: 100;
 }
-
-.page-section {
-  height: 100vh;
-}
-
 
 /* style input field text */
 ::-webkit-input-placeholder {
@@ -103,12 +100,17 @@ body {
 }
 
 .reviews-list {
-  list-style: none;
+  list-style-type: none;
   -webkit-column-count: 2;
   -moz-column-count: 2;
   -ms-column-count: 2;
   -o-column-count: 2;
   column-count: 2;
+}
+
+.reviews-list-item {
+  background-color: white;
+  margin: 1em;
 }
 
 input[type=text] {
