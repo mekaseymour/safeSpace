@@ -2,27 +2,58 @@
 const body = document.body;
 const firstDiv = document.getElementById('one');
 const secondDiv = document.getElementById('two');
+const searchDivContainer = document.getElementsByClassName('search-div')[0];
 const locationInputField = document.getElementById('location-input-field');
 const submitLocationBtn = document.getElementById('submit-location-button');
 const errorMessage = document.getElementById('error-message');
 
-// DYNAMICALLY CREATE DOM ELEMENTS
-// dynamically build new review form
+// CREATE DOM ELEMENTS
+// build new review form
 const reviewFormDiv = document.createElement('div');
 const formTitle = document.createElement('h1');
 const reviewForm = document.createElement('form');
 const orgInput = document.createElement('input');
 const reviewTypesDiv = document.createElement('div');
 
+const listOfCompanies = document.createElement('datalist');
+listOfCompanies.setAttribute('id', 'companies');
+const orgInputDiv = document.createElement('div');
+orgInput.id = 'org-input-field';
+orgInputDiv.appendChild(orgInput);
+orgInputDiv.appendChild(listOfCompanies);
+
+class SearchBar {
+  constructor(searchBar, searchBtn) {
+    this.searchBar = searchBar;
+    this.searchBtn = searchBtn;
+    this.searchBar.addEventListener('click', this.clickedSearchBar.bind(this));
+  }
+
+  clickedSearchBar() {
+    this.searchBar.style.width = '250px';
+    this.searchBar.style.textAlign = 'left';
+    this.searchBar.placeholder = 'search by location...';
+    this.searchBtn.style.display = 'inline';
+  }
+
+}
+
+let mainSearchBar = new SearchBar(locationInputField, submitLocationBtn);
+
 formTitle.innerHTML = 'What company/org would you like to review:'
 
 orgInput.setAttribute('type', 'text');
 orgInput.setAttribute('placeholder', 'company or organization');
+orgInput.setAttribute('list', listOfCompanies.id);
 
 reviewForm.appendChild(orgInput);
 reviewFormDiv.appendChild(formTitle);
 reviewFormDiv.appendChild(reviewForm)
 reviewFormDiv.appendChild(reviewTypesDiv);
+reviewFormDiv.style.backgroundColor = 'white';
+const searchForOrgsBtn = document.createElement('button');
+searchForOrgsBtn.innerHTML = 'search orgs';
+reviewFormDiv.appendChild(searchForOrgsBtn);
 
 let reviewTypesArr = ['gender/gender identity', 'race/ethnicity', 'education', 'religion', 'physical ability', 'sexual orientation'];
 
@@ -88,35 +119,45 @@ autocomplete.addListener('place_changed', () => {
 
 if(locationInputField.value) { locationInputField.size = locationInputField.value.length } ;
 
-/*
-// FOURSQUARE INTEGRATION
-// make AJAX call to FOURSQUARE
-// make an instance of the XMLHttpRequest class
-const xhr = new XMLHttpRequest();
-xhr.open('GET', 'https://api.foursquare.com/v2/venues/search?ll=40.7,-74&oauth_token=42S2L2GUHLH0M3TEQTVFOR2I1QKMX4CJM5NUEVW5QOZVVXUI&v=20170510', true);
-// setting callback to be run on success
-xhr.onload = () => {
-  //let responseObject = JSON.parse(xhr.response);
-  //let venuesArr = responseObject.response;
-  //console.log(venuesArr); // why is this coming back as undefined
-}
-// send off the request
-xhr.send(JSON.stringify());
-*/
-
 // EVENT LISTENERS
 $(document).ready(function() {
 
+  // using clearbit API to do company search and get logo, name, url
+  // http://blog.clearbit.com/company-autocomplete-api/
+
+  function getCompanyInfo() {
+
+    if(orgInput.value) {
+      $.ajax({
+        type: 'GET',
+        url: 'https://autocomplete.clearbit.com/v1/companies/suggest?query=' + orgInput.value,
+        success: (arrOfObjects) => {
+
+          listOfCompanies.innerHTML = '';
+
+          for(var i = 0; i < arrOfObjects.length; i++) {
+            let option = document.createElement('option');
+            let companyName = arrOfObjects[i].name;
+            option.value = companyName;
+            console.log('name of company:', companyName);
+            listOfCompanies.appendChild(option);
+          }
+
+          reviewForm.appendChild(listOfCompanies);
+          console.log(listOfCompanies);
+          console.log(orgInput);
+
+        }
+      });
+    }
+  }
+
+  orgInput.addEventListener('keyup', e => {
+    getCompanyInfo();
+  });
+
   // BODY: shink responsive buttons when clicks occur elsewhere
   body.addEventListener('click', firstDivPageClicks);
-
-  // LOCATION INPUT FIELD: re-style locationInputField on click
-  locationInputField.addEventListener('click', () => {
-      locationInputField.style.width = '250px';
-      locationInputField.style.textAlign = 'left';
-      locationInputField.placeholder = 'search by location...';
-      submitLocationBtn.style.display = 'inline';
-  });
 
   // FIRST DIV
   firstDiv.addEventListener('keypress', event => {
@@ -142,11 +183,13 @@ $(document).ready(function() {
       handlesSubmitClick();
       $('html, body').animate({scrollTop: $('#two').offset().top}, 'slow');
       let results = dataArr;
+      /*
       results.forEach(resultObj => {
         showResults(resultObj);
       });
+      */
       // append 'new review' button
-      secondDiv.appendChild(makeReviewButton);
+      //secondDiv.appendChild(makeReviewButton);
       secondDiv.appendChild(reviewFormDiv);
     } else {
       secondDiv.innerHTML = '';
