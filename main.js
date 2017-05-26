@@ -10,17 +10,14 @@ const errorMessage = document.getElementById('error-message');
 // CREATE DOM ELEMENTS
 // build new review form
 const reviewFormDiv = document.createElement('div');
-const formTitle = document.createElement('h1');
 const reviewForm = document.createElement('form');
+const formTitle = document.createElement('h1');
 const orgInput = document.createElement('input');
-const reviewTypesDiv = document.createElement('div');
-
+orgInput.className = 'form';
 const listOfCompanies = document.createElement('datalist');
-listOfCompanies.setAttribute('id', 'companies');
-const orgInputDiv = document.createElement('div');
-orgInput.id = 'org-input-field';
-orgInputDiv.appendChild(orgInput);
-orgInputDiv.appendChild(listOfCompanies);
+const companyInfoDiv = document.createElement('div');
+const reviewTypesDiv = document.createElement('div');
+const searchForOrgsBtn = document.createElement('input');
 
 class SearchBar {
   constructor(searchBar, searchBtn) {
@@ -38,22 +35,54 @@ class SearchBar {
 
 }
 
+class Form {
+  constructor() {
+    this.form = document.createElement('form');
+  }
+
+  makeTextInput(id) {
+    let newInputEl = document.createElement('input');
+    newInputEl.type = 'text';
+    newInputEl.id = id;
+    this.form.appendChild()
+  }
+
+  makeRadioInput(arr) {
+    arr.forEach(el => {
+      let label = document.createElement('label');
+      let checkbox = document.createElement('input');
+      checkbox.setAttribute('type', 'checkbox');
+      label.innerHTML = el;
+      reviewTypesDiv.appendChild(label);
+      label.appendChild(checkbox);
+    });
+  }
+
+}
+
 let mainSearchBar = new SearchBar(locationInputField, submitLocationBtn);
+
+// MAKE FORM
 
 formTitle.innerHTML = 'What company/org would you like to review:'
 
+listOfCompanies.setAttribute('id', 'companies');
+searchForOrgsBtn.type = 'submit';
+searchForOrgsBtn.value = 'search orgs';
+companyInfoDiv.style.textAlign = 'center';
+
+orgInput.id = 'org-input-field';
 orgInput.setAttribute('type', 'text');
 orgInput.setAttribute('placeholder', 'company or organization');
 orgInput.setAttribute('list', listOfCompanies.id);
 
-reviewForm.appendChild(orgInput);
 reviewFormDiv.appendChild(formTitle);
-reviewFormDiv.appendChild(reviewForm)
-reviewFormDiv.appendChild(reviewTypesDiv);
-reviewFormDiv.style.backgroundColor = 'white';
-const searchForOrgsBtn = document.createElement('button');
-searchForOrgsBtn.innerHTML = 'search orgs';
-reviewFormDiv.appendChild(searchForOrgsBtn);
+reviewFormDiv.appendChild(reviewForm);
+reviewForm.appendChild(orgInput);
+reviewForm.appendChild(companyInfoDiv);
+reviewForm.appendChild(reviewTypesDiv);
+//reviewFormDiv.style.backgroundColor = 'white';
+reviewForm.appendChild(searchForOrgsBtn);
 
 let reviewTypesArr = ['gender/gender identity', 'race/ethnicity', 'education', 'religion', 'physical ability', 'sexual orientation'];
 
@@ -63,8 +92,8 @@ let makeReviewTypesCheckboxes = (arr) => {
     checkbox.setAttribute('type', 'checkbox');
     let label = document.createElement('label');
     label.innerHTML = type;
-    label.appendChild(checkbox);
     reviewTypesDiv.appendChild(label);
+    label.appendChild(checkbox);
   });
 
 }
@@ -125,35 +154,45 @@ $(document).ready(function() {
   // using clearbit API to do company search and get logo, name, url
   // http://blog.clearbit.com/company-autocomplete-api/
 
-  function getCompanyInfo() {
+  function getCompanyInfo(input) {
 
-    if(orgInput.value) {
+    // if input is truthy (ins't blank, for example)
+    if(input) {
       $.ajax({
         type: 'GET',
-        url: 'https://autocomplete.clearbit.com/v1/companies/suggest?query=' + orgInput.value,
+        url: 'https://autocomplete.clearbit.com/v1/companies/suggest?query=' + input,
         success: (arrOfObjects) => {
 
           listOfCompanies.innerHTML = '';
+          let arrOfCompanyObjs = [];
+          let selectedOrg = '';
+          let selectedOrgLogo = '';
 
           for(var i = 0; i < arrOfObjects.length; i++) {
-            let option = document.createElement('option');
             let companyName = arrOfObjects[i].name;
+            let companyLogo = arrOfObjects[i].logo;
+            let obj = {name: companyName, logo: companyLogo};
+            let option = document.createElement('option');
             option.value = companyName;
-            console.log('name of company:', companyName);
+            //console.log('name of company:', companyName);
             listOfCompanies.appendChild(option);
+            arrOfCompanyObjs.push();
           }
 
           reviewForm.appendChild(listOfCompanies);
-          console.log(listOfCompanies);
-          console.log(orgInput);
 
-        }
+          }
       });
     }
   }
 
+
   orgInput.addEventListener('keyup', e => {
-    getCompanyInfo();
+    getCompanyInfo(orgInput.value);
+  });
+
+  orgInput.addEventListener('input', () => {
+    console.log(orgInput.value, 'selected!');
   });
 
   // BODY: shink responsive buttons when clicks occur elsewhere

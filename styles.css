@@ -99,6 +99,10 @@ body {
 	display: none;
 }
 
+input[type=text] {
+  margin-top: 2em;
+}
+
 .reviews-list {
   list-style-type: none;
   -webkit-column-count: 2;
@@ -113,6 +117,18 @@ body {
   margin: 1em;
 }
 
-input[type=text] {
+.form {
+  background-color: white;
+  height: 50px;
+  width: 300px;
+  font-size: 1.5em;
+  border: 1px solid transparent;
   margin-top: 2em;
+  margin-bottom: 2em;
+  color: gray;
+}
+
+.form::-webkit-input-placeholder {
+    /* WebKit, Blink, Edge */
+    color: #f7f7f7;
 }
