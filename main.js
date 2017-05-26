@@ -7,18 +7,6 @@ const locationInputField = document.getElementById('location-input-field');
 const submitLocationBtn = document.getElementById('submit-location-button');
 const errorMessage = document.getElementById('error-message');
 
-// CREATE DOM ELEMENTS
-// build new review form
-const reviewFormDiv = document.createElement('div');
-const reviewForm = document.createElement('form');
-const formTitle = document.createElement('h1');
-const orgInput = document.createElement('input');
-orgInput.className = 'form';
-const listOfCompanies = document.createElement('datalist');
-const companyInfoDiv = document.createElement('div');
-const reviewTypesDiv = document.createElement('div');
-const searchForOrgsBtn = document.createElement('input');
-
 class SearchBar {
   constructor(searchBar, searchBtn) {
     this.searchBar = searchBar;
@@ -40,27 +28,56 @@ class Form {
     this.form = document.createElement('form');
   }
 
-  makeTextInput(id) {
+  makeTextInput(id, placeholder) {
     let newInputEl = document.createElement('input');
-    newInputEl.type = 'text';
     newInputEl.id = id;
-    this.form.appendChild()
+    newInputEl.placeholder = placeholder;
+    newInputEl.type = 'text';
+    newInputEl.className = 'form';
+    this.form.appendChild(newInputEl)
+    return newInputEl;
   }
 
-  makeRadioInput(arr) {
+  makeCheckboxes(arr) {
+    let div = document.createElement('div');
     arr.forEach(el => {
       let label = document.createElement('label');
       let checkbox = document.createElement('input');
       checkbox.setAttribute('type', 'checkbox');
       label.innerHTML = el;
-      reviewTypesDiv.appendChild(label);
-      label.appendChild(checkbox);
+      div.appendChild(checkbox);
+      div.appendChild(label);
     });
+    this.form.appendChild(div);
+    return div;
+  }
+
+  makeSubmitBtn() {
+    let btn = document.createElement('input');
+    btn.type = 'submit';
+    return btn;
   }
 
 }
 
-let mainSearchBar = new SearchBar(locationInputField, submitLocationBtn);
+// CREATE DOM ELEMENTS
+// build new review form
+const reviewFormDiv = document.createElement('div');
+const formTitle = document.createElement('h1');
+const listOfCompanies = document.createElement('datalist');
+const companyInfoDiv = document.createElement('div');
+const reviewTypesDiv = document.createElement('div');
+
+// make first step 'leave review' form
+const firstForm = new Form();
+const reviewForm = firstForm.form;
+const orgInput = firstForm.makeTextInput('org-input-field', 'company or organization');
+const reviewTypesArr = ['gender/gender identity', 'race/ethnicity', 'education', 'religion', 'physical ability', 'sexual orientation'];
+const formCheckboxes = firstForm.makeCheckboxes(reviewTypesArr);
+const searchForOrgsBtn = firstForm.makeSubmitBtn();
+
+// main location search input on div one
+const mainSearchBar = new SearchBar(locationInputField, submitLocationBtn);
 
 // MAKE FORM
 
@@ -70,10 +87,6 @@ listOfCompanies.setAttribute('id', 'companies');
 searchForOrgsBtn.type = 'submit';
 searchForOrgsBtn.value = 'search orgs';
 companyInfoDiv.style.textAlign = 'center';
-
-orgInput.id = 'org-input-field';
-orgInput.setAttribute('type', 'text');
-orgInput.setAttribute('placeholder', 'company or organization');
 orgInput.setAttribute('list', listOfCompanies.id);
 
 reviewFormDiv.appendChild(formTitle);
@@ -83,22 +96,6 @@ reviewForm.appendChild(companyInfoDiv);
 reviewForm.appendChild(reviewTypesDiv);
 //reviewFormDiv.style.backgroundColor = 'white';
 reviewForm.appendChild(searchForOrgsBtn);
-
-let reviewTypesArr = ['gender/gender identity', 'race/ethnicity', 'education', 'religion', 'physical ability', 'sexual orientation'];
-
-let makeReviewTypesCheckboxes = (arr) => {
-  arr.forEach(type => {
-    let checkbox = document.createElement('input');
-    checkbox.setAttribute('type', 'checkbox');
-    let label = document.createElement('label');
-    label.innerHTML = type;
-    reviewTypesDiv.appendChild(label);
-    label.appendChild(checkbox);
-  });
-
-}
-
-makeReviewTypesCheckboxes(reviewTypesArr);
 
 // Get a reference to the firebase database
 const database = firebase.database();
