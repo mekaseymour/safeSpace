@@ -52,9 +52,12 @@ class Form {
     return div;
   }
 
-  makeSubmitBtn() {
+  makeSubmitBtn(text, btnCallback) {
     let btn = document.createElement('input');
-    btn.type = 'submit';
+    btn.type = 'button';
+    btn.value = text;
+    btn.addEventListener('click', btnCallback);
+    this.form.appendChild(btn);
     return btn;
   }
 
@@ -64,28 +67,37 @@ class Form {
 // build new review form
 const reviewFormDiv = document.createElement('div');
 const formTitle = document.createElement('h1');
+formTitle.style.color = '#383838';
 const listOfCompanies = document.createElement('datalist');
 const companyInfoDiv = document.createElement('div');
 const reviewTypesDiv = document.createElement('div');
 
 // make first step 'leave review' form
+
+
 const firstForm = new Form();
 const reviewForm = firstForm.form;
 const orgInput = firstForm.makeTextInput('org-input-field', 'company or organization');
 const reviewTypesArr = ['gender/gender identity', 'race/ethnicity', 'education', 'religion', 'physical ability', 'sexual orientation'];
-const formCheckboxes = firstForm.makeCheckboxes(reviewTypesArr);
-const searchForOrgsBtn = firstForm.makeSubmitBtn();
+//const formCheckboxes = firstForm.makeCheckboxes(reviewTypesArr);
+const searchForOrgsBtn = firstForm.makeSubmitBtn('next', orgsBtnCallback);
+let selectedOrg = '';
 
-// main location search input on div one
-const mainSearchBar = new SearchBar(locationInputField, submitLocationBtn);
+function orgsBtnCallback() {
+  let selectedOrgInput = document.getElementById('org-input-field');
+  selectedOrg = selectedOrgInput.value;
+  reviewForm.style.display = 'none';
+  formTitle.style.display = 'none';
+  console.log('type form display block');
+  typeForm.style.display = 'block';
+  console.log(selectedOrg);
+}
 
 // MAKE FORM
 
 formTitle.innerHTML = 'What company/org would you like to review:'
 
 listOfCompanies.setAttribute('id', 'companies');
-searchForOrgsBtn.type = 'submit';
-searchForOrgsBtn.value = 'search orgs';
 companyInfoDiv.style.textAlign = 'center';
 orgInput.setAttribute('list', listOfCompanies.id);
 
@@ -97,6 +109,25 @@ reviewForm.appendChild(reviewTypesDiv);
 //reviewFormDiv.style.backgroundColor = 'white';
 reviewForm.appendChild(searchForOrgsBtn);
 
+const secondForm = new Form();
+const typeForm = secondForm.form;
+console.log('type form display none');
+typeForm.style.display = 'none';
+secondForm.makeCheckboxes(reviewTypesArr);
+secondForm.makeSubmitBtn('next', secondFormCallback);
+
+function secondFormCallback() {
+  typeForm.style.display = 'none';
+  console.log('second form submitted');
+}
+
+const typeFormTitle = document.createElement('h1');
+typeFormTitle.innerHTML = 'What type of review is this?';
+reviewFormDiv.appendChild(typeForm);
+
+// main location search input on div one
+const mainSearchBar = new SearchBar(locationInputField, submitLocationBtn);
+
 // Get a reference to the firebase database
 const database = firebase.database();
 const databaseRootRef = database.ref('Orgs');
@@ -106,11 +137,6 @@ let dataArr = [];
 // locationInputField was a proper Google autocomplete result
 let googlePlaceSelected = false;
 let searchResults = '';
-
-// div elements
-let makeReviewButton = document.createElement('button');
-makeReviewButton.innerHTML = 'new review';
-makeReviewButton.id = 'make-review-button';
 
 // Get Firebase data
 databaseRootRef.on('value', snapshot => {
@@ -211,6 +237,7 @@ $(document).ready(function() {
     // show the second div
     secondDiv.style.display = 'block';
   }
+
  // soft scroll from div one to div two
 
   function scrollOneToTwo() {
@@ -239,6 +266,7 @@ $(document).ready(function() {
   submitLocationBtn.addEventListener('click', scrollOneToTwo);
 
 });
+
 
 // FUNCTIONS
 
