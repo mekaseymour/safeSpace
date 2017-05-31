@@ -24,8 +24,9 @@ class SearchBar {
 }
 
 class Form {
-  constructor() {
+  constructor(id) {
     this.form = document.createElement('form');
+    this.form.id = id;
   }
 
   makeTextInput(id, placeholder) {
@@ -43,7 +44,10 @@ class Form {
     arr.forEach(el => {
       let label = document.createElement('label');
       let checkbox = document.createElement('input');
-      checkbox.setAttribute('type', 'checkbox');
+      checkbox.setAttribute('type', 'radio');
+      checkbox.setAttribute('name', 'type');
+      checkbox.id = el;
+      label.for = el;
       label.innerHTML = el;
       div.appendChild(checkbox);
       div.appendChild(label);
@@ -75,7 +79,7 @@ const reviewTypesDiv = document.createElement('div');
 // make first step 'leave review' form
 
 
-const firstForm = new Form();
+const firstForm = new Form('first-form');
 const reviewForm = firstForm.form;
 const orgInput = firstForm.makeTextInput('org-input-field', 'company or organization');
 const reviewTypesArr = ['gender/gender identity', 'race/ethnicity', 'education', 'religion', 'physical ability', 'sexual orientation'];
@@ -89,7 +93,7 @@ function orgsBtnCallback() {
   reviewForm.style.display = 'none';
   formTitle.style.display = 'none';
   console.log('type form display block');
-  typeForm.style.display = 'block';
+  secondFormDiv.style.display = 'block';
   console.log(selectedOrg);
 }
 
@@ -109,21 +113,45 @@ reviewForm.appendChild(reviewTypesDiv);
 //reviewFormDiv.style.backgroundColor = 'white';
 reviewForm.appendChild(searchForOrgsBtn);
 
-const secondForm = new Form();
+const secondForm = new Form('second-form');
 const typeForm = secondForm.form;
-console.log('type form display none');
-typeForm.style.display = 'none';
 secondForm.makeCheckboxes(reviewTypesArr);
 secondForm.makeSubmitBtn('next', secondFormCallback);
 
 function secondFormCallback() {
-  typeForm.style.display = 'none';
+  secondFormDiv.style.display = 'none';
+  let types = document.getElementsByName('type');
+  types.forEach(radio => {
+    if(radio.checked) {
+      console.log(radio.id);
+    }
+  });
+  thirdFormDiv.style.display = 'block';
   console.log('second form submitted');
 }
 
 const typeFormTitle = document.createElement('h1');
 typeFormTitle.innerHTML = 'What type of review is this?';
-reviewFormDiv.appendChild(typeForm);
+const secondFormDiv = document.createElement('div');
+secondFormDiv.style.display = 'none';
+secondFormDiv.appendChild(typeFormTitle);
+secondFormDiv.appendChild(typeForm);
+reviewFormDiv.appendChild(secondFormDiv);
+
+const thirdForm = new Form('third-form');
+const feedbackForm = thirdForm.form;
+const textArea = document.createElement('textarea');
+textArea.form = thirdForm.id;
+thirdForm.makeSubmitBtn('make review', makeNewReview);
+const thirdFormDiv = document.createElement('div');
+thirdFormDiv.style.display = 'none';
+feedbackForm.appendChild(textArea);
+thirdFormDiv.appendChild(feedbackForm);
+reviewFormDiv.appendChild(thirdFormDiv);
+
+function makeNewReview() {
+  console.log('new review made');
+}
 
 // main location search input on div one
 const mainSearchBar = new SearchBar(locationInputField, submitLocationBtn);
