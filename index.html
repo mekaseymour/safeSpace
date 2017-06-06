@@ -18,7 +18,34 @@
         </div>
       </div>
       <div id="two">
-        <form></form>
+        <form id="find-orgs-form">
+            <h1 class="form-title">What Company/Org Would You Like to Review:</h1>
+            <input class="form" type="text" placeholder="find a company/organization" id="org-input" list="companies">
+            <datalist id="companies"></datalist>
+            <button id="find-org-button" type="button">next</button>
+        </form>
+
+        <form id="review-type-form" class="hidden">
+          <div>
+            <h1>What type of review is this?</h1>
+            <label for="gender">gender/gender identity</label><input type="radio" name="type" id="gender">
+            <label for="race">race/ethnicity</label><input type="radio" name="type" id="race">
+            <label for="education">education</label><input type="radio" name="type" id="education">
+            <label for="religion">religion</label><input type="radio" name="type" id="religion">
+            <label for="physical">physical ability</label><input type="radio" name="type" id="physical">
+            <label for="orientation">sexual orientation</label><input type="radio" name="type" id="orientation">
+            <label for="age">age</label><input type="radio" name="type" id="age">
+            <button id="review-type-button" type="button">next</button>
+          </div>
+        </form>
+
+        <form id="feedback-form" class="hidden">
+          <div>
+            <h1></h1>
+            <textarea class="textarea" form="feedback-form"></textarea>
+            <button type="button"></button>
+          </div>
+        </form>
       </div>
     </div>
 
@@ -40,6 +67,7 @@
 
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBrZusqvcgz0oFhfR_RnbifIwg6kigs8bA&libraries=places"></script>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+  <!--  <script src="Database.js"></script> -->
     <script src="main.js"></script>
 
   </body>

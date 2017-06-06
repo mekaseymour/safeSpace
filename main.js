@@ -7,6 +7,20 @@ const locationInputField = document.getElementById('location-input-field');
 const submitLocationBtn = document.getElementById('submit-location-button');
 const errorMessage = document.getElementById('error-message');
 
+const orgInput = document.getElementById('org-input');
+orgInput.style.display = 'block';
+
+// function setUpSearchBar(bar, button) {
+//   bar.addEventListener('click', () => {
+//     bar.classList.add('active');
+//     // bar.style.width = '250px';
+//     // bar.style.textAlign = 'left';
+//     bar.placeholder = 'search by location...';
+//
+//     button.classList.add('active');
+//     // button.style.display = 'inline';
+//   })
+// }
 class SearchBar {
   constructor(searchBar, searchBtn) {
     this.searchBar = searchBar;
@@ -20,139 +34,82 @@ class SearchBar {
     this.searchBar.placeholder = 'search by location...';
     this.searchBtn.style.display = 'inline';
   }
-
 }
 
 class Form {
-  constructor(id) {
-    this.form = document.createElement('form');
-    this.form.id = id;
+  constructor(formEl) { //constructor(id)
+    this.form = formEl;
   }
 
-  makeTextInput(id, placeholder) {
-    let newInputEl = document.createElement('input');
-    newInputEl.id = id;
-    newInputEl.placeholder = placeholder;
-    newInputEl.type = 'text';
-    newInputEl.className = 'form';
-    this.form.appendChild(newInputEl)
-    return newInputEl;
-  }
-
-  makeCheckboxes(arr) {
-    let div = document.createElement('div');
-    arr.forEach(el => {
-      let label = document.createElement('label');
-      let checkbox = document.createElement('input');
-      checkbox.setAttribute('type', 'radio');
-      checkbox.setAttribute('name', 'type');
-      checkbox.id = el;
-      label.for = el;
-      label.innerHTML = el;
-      div.appendChild(checkbox);
-      div.appendChild(label);
+  populateDatalist(inputEl, callback) {
+    inputEl.addEventListener('keydown', e => {
+      callback(inputEl.value);
     });
-    this.form.appendChild(div);
-    return div;
   }
 
-  makeSubmitBtn(text, btnCallback) {
-    let btn = document.createElement('input');
-    btn.type = 'button';
-    btn.value = text;
+  handleSubmitBtn(btnEl, btnCallback) {
+    let btn = btnEl;
     btn.addEventListener('click', btnCallback);
-    this.form.appendChild(btn);
-    return btn;
+    // return btn
   }
 
 }
 
 // CREATE DOM ELEMENTS
-// build new review form
-const reviewFormDiv = document.createElement('div');
-const formTitle = document.createElement('h1');
-formTitle.style.color = '#383838';
-const listOfCompanies = document.createElement('datalist');
-const companyInfoDiv = document.createElement('div');
-const reviewTypesDiv = document.createElement('div');
 
-// make first step 'leave review' form
-
-
-const firstForm = new Form('first-form');
-const reviewForm = firstForm.form;
-const orgInput = firstForm.makeTextInput('org-input-field', 'company or organization');
-const reviewTypesArr = ['gender/gender identity', 'race/ethnicity', 'education', 'religion', 'physical ability', 'sexual orientation'];
+// find orgs form
+const findOrgsEl = document.getElementById('find-orgs-form');
+const listOfCompanies = document.getElementsByTagName('datalist')[0];
+const findOrgsForm = new Form(findOrgsEl);
 //const formCheckboxes = firstForm.makeCheckboxes(reviewTypesArr);
-const searchForOrgsBtn = firstForm.makeSubmitBtn('next', orgsBtnCallback);
+const findOrgsBtn = document.getElementById('find-org-button');
+//findOrgsBtn.style.display = 'block';
+findOrgsForm.handleSubmitBtn(findOrgsBtn, orgsBtnCallback);
 let selectedOrg = '';
 
 function orgsBtnCallback() {
-  let selectedOrgInput = document.getElementById('org-input-field');
-  selectedOrg = selectedOrgInput.value;
-  reviewForm.style.display = 'none';
-  formTitle.style.display = 'none';
-  console.log('type form display block');
-  secondFormDiv.style.display = 'block';
-  console.log(selectedOrg);
+  findOrgsForm.form.className = 'hidden';
+  reviewTypeForm.form.className = 'visible'
+  //secondFormDiv.style.display = 'block';
+  console.log('hide old form, show new form');
 }
 
 // MAKE FORM
+/*
 
-formTitle.innerHTML = 'What company/org would you like to review:'
+//findOrgsFormDiv.style.backgroundColor = 'white';
+findOrgsForm.appendChild(searchForOrgsBtn);
+*/
 
-listOfCompanies.setAttribute('id', 'companies');
-companyInfoDiv.style.textAlign = 'center';
-orgInput.setAttribute('list', listOfCompanies.id);
-
-reviewFormDiv.appendChild(formTitle);
-reviewFormDiv.appendChild(reviewForm);
-reviewForm.appendChild(orgInput);
-reviewForm.appendChild(companyInfoDiv);
-reviewForm.appendChild(reviewTypesDiv);
-//reviewFormDiv.style.backgroundColor = 'white';
-reviewForm.appendChild(searchForOrgsBtn);
-
-const secondForm = new Form('second-form');
-const typeForm = secondForm.form;
-secondForm.makeCheckboxes(reviewTypesArr);
-secondForm.makeSubmitBtn('next', secondFormCallback);
+const reviewTypeForm = new Form('review-type-form');
+const reviewTypeBtn = document.getElementById('review-type-button');
+reviewTypeForm.handleSubmitBtn(reviewTypeBtn, secondFormCallback);
 
 function secondFormCallback() {
-  secondFormDiv.style.display = 'none';
+  reviewTypeForm.form.className = 'hidden';
   let types = document.getElementsByName('type');
   types.forEach(radio => {
     if(radio.checked) {
       console.log(radio.id);
     }
   });
-  thirdFormDiv.style.display = 'block';
+  thirdFormDiv.className = 'visible';
   console.log('second form submitted');
 }
 
-const typeFormTitle = document.createElement('h1');
-typeFormTitle.innerHTML = 'What type of review is this?';
-const secondFormDiv = document.createElement('div');
-secondFormDiv.style.display = 'none';
-secondFormDiv.appendChild(typeFormTitle);
-secondFormDiv.appendChild(typeForm);
-reviewFormDiv.appendChild(secondFormDiv);
-
+/*
 const thirdForm = new Form('third-form');
 const feedbackForm = thirdForm.form;
-const textArea = document.createElement('textarea');
-textArea.form = thirdForm.id;
-thirdForm.makeSubmitBtn('make review', makeNewReview);
-const thirdFormDiv = document.createElement('div');
 thirdFormDiv.style.display = 'none';
 feedbackForm.appendChild(textArea);
+thirdForm.handleSubmitBtn('make review', makeNewReview);
 thirdFormDiv.appendChild(feedbackForm);
-reviewFormDiv.appendChild(thirdFormDiv);
+findOrgsFormDiv.appendChild(thirdFormDiv);
 
 function makeNewReview() {
   console.log('new review made');
 }
-
+*/
 // main location search input on div one
 const mainSearchBar = new SearchBar(locationInputField, submitLocationBtn);
 
@@ -166,6 +123,12 @@ let dataArr = [];
 let googlePlaceSelected = false;
 let searchResults = '';
 
+// // Get Firebase data
+// databaseRootRef.on('value', snapshot => {
+//   dataArr = snapshot.map(child => child.val());
+//   console.log(dataArr);
+// });
+
 // Get Firebase data
 databaseRootRef.on('value', snapshot => {
   let newDataArr = [];
@@ -176,6 +139,8 @@ databaseRootRef.on('value', snapshot => {
   dataArr = newDataArr;
   console.log(dataArr);
 });
+
+///////////////const orgsDatabase = new Database('Orgs');
 
 // GOOGLE API - handle the location input field autocomplete
 let options = {
@@ -230,18 +195,15 @@ $(document).ready(function() {
             arrOfCompanyObjs.push();
           }
 
-          reviewForm.appendChild(listOfCompanies);
+          findOrgsForm.form.appendChild(listOfCompanies);
 
           }
       });
+      console.log(listOfCompanies);
     }
   }
 
-
-  orgInput.addEventListener('keyup', e => {
-    getCompanyInfo(orgInput.value);
-  });
-
+  findOrgsForm.populateDatalist(orgInput, getCompanyInfo);
   orgInput.addEventListener('input', () => {
     console.log(orgInput.value, 'selected!');
   });
@@ -273,15 +235,16 @@ $(document).ready(function() {
     if(googlePlaceSelected) {
       handlesSubmitClick();
       $('html, body').animate({scrollTop: $('#two').offset().top}, 'slow');
+      //let results = orgsDatabase.getData();
       let results = dataArr;
-      /*
+
       results.forEach(resultObj => {
         showResults(resultObj);
       });
-      */
+
       // append 'new review' button
       //secondDiv.appendChild(makeReviewButton);
-      secondDiv.appendChild(reviewFormDiv);
+      secondDiv.appendChild(findOrgsForm.form);
     } else {
       secondDiv.innerHTML = '';
       secondDiv.style.display = 'none';
@@ -324,36 +287,7 @@ function firstDivPageClicks(event) {
   }
 }
 
-// create dynamic list item templates
-function createListItem(title, subtitle) {
-  let listItem = document.createElement('li');
-  listItem.className = 'reviews-list-item';
-  let listItemTitle = document.createElement('h2');
-  let listItemSubtitle = document.createElement('h4');
-  //let listItemContent = document.createElement('p');
-
-  listItemTitle.innerHTML = title;
-  listItemSubtitle.innerHTML = subtitle;
-  //listItemContent.innerHTML = content;
-
-  listItem.appendChild(listItemTitle);
-  listItem.appendChild(listItemSubtitle);
-  //listItem.appendChild(listItemContent);
-
-  return listItem;
-}
-
 function showResults(dataObj) {
   // construct list item
-  let reviewsList = document.createElement('ul');
-  reviewsList.className = 'reviews-list';
-  reviewsList.className = 'divTwoHeaders';
-  let header = dataObj.name;
-  let p = dataObj.score;
-
-  let listItem = createListItem(header, p);
-
-  reviewsList.appendChild(listItem);
-
-  secondDiv.appendChild(reviewsList);
+  console.log(dataObj);
 }

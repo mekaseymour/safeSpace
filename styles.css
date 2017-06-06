@@ -133,7 +133,27 @@ input[type=text] {
 	border-radius: 4px;
 }
 
+.form-title {
+  color: #383838;
+}
+
 .form::-webkit-input-placeholder {
     /* WebKit, Blink, Edge */
     color: #f7f7f7;
+}
+
+.textarea {
+  height:auto;
+  max-width:600px;
+  color:#999;
+  font-weight:400;
+  font-size:30px;
+}
+
+.visible {
+  display: block;
+}
+
+.hidden {
+  display: none;
 }
